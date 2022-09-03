@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app" style="color: rgb(20, 169, 189); margin-left: 20px; margin-right: 20px; text-align:right; width:300px">
+    <div  >
+        <div>
+            <legend>form表单 注册:</legend>
+            姓名:<input style="width: 170px;" type="text" name="user" v-model="formData.user">
+            <br>
+            年龄:<input type="text" name="age" v-model="formData.age">
+            <br>
+            性别:<input type="text" name="sex" v-model="formData.sex">
+            <br>
+            手机:<input type="text" name="phone" v-model="formData.phone">
+            <br>
+            密码:<input type="text" name="password" v-model="formData.password">
+            <br>
+            <button @click="add()">新增</button>&ensp;
+            <button @click="update()">提交修改</button>&ensp;<br>
+            删除ID:<input type="text" name="id" v-model="id">
+            <br>
+            <button @click="get()">查询</button>&ensp;
+            <button @click="del()">删除</button>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            formData:{
+                user: null,
+                age: null,
+                sex: null,
+                phone: null,
+                password: null,
+            },
+            id: null,  // 根据 ID 去查数据，以及删除操作传的 ID
+        },
+        mounted() {
+
+        },
+        methods: {
+            // 模拟 Get 请求
+            apiGet(request) {
+                axios(request).then(function (response) {
+                    // console.log(response.data);
+                    // 查询操作才需要这个，结果集覆盖页面
+                    app._data.formData = response.data;
+                });
+            },
+            // 模拟 Post 请求
+            apiPost(request) {
+                axios(request).then(function (response) {
+                    // console.log(response.data);
+                    alert(response.data) ;
+                });
+            },
+
+            // 查询
+            get() {
+                let request = {
+                    method: 'get',
+                    url: 'http://localhost/list/get?id=' + this.id,
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    },
+                    data: this.formData,
+                }
+                // 调用 Get 请求
+                this.apiGet(request);
+            },
+
+            // 新增
+            add() {
+                let request = {
+                    method: 'get',
+                    url: 'http://localhost:8080/user/insert',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    },
+                    data: this.formData,
+                }
+                // 调用 Post 请求
+                this.apiPost(request);
+            },
+
+            // 修改
+            update() {
+                this.formData.id = this.id;
+                let request = {
+                    method: 'post',
+                    url: 'http://localhost:8080/user/save',
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    },
+                    data: this.formData,
+                }
+                this.apiPost(request);
+            },
+
+            // 删除
+            del() {
+                let request = {
+                    method: 'get', // 这里可以用 post 或者 delete ，取决于后台限制用哪种接收方式
+                    url: 'http://localhost/list/del?id=' + this.id,
+                    headers: {
+                        'Content-Type': 'application/json; charset=UTF-8'
+                    }
+                }
+                this.apiPost(request);
+            },
+
+        },
+
+    });
+</script>
+</html>
